@@ -3217,11 +3217,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "subcategory",
   data: function data() {
     return {
-      options1: ["value1", "value2", "value3"],
+      categories: {},
+      subcategories: {},
       editMode: false,
       form: new Form({
         id: "",
@@ -3237,6 +3241,24 @@ __webpack_require__.r(__webpack_exports__);
       $("#exampleModal").modal("show");
     },
     createSubcategory: function createSubcategory() {//
+    },
+    loadCategories: function loadCategories() {
+      var _this = this;
+
+      axios.get("api/category").then(function (res) {
+        _this.categories = res.data.data;
+      })["catch"](function (err) {
+        return console.log(err.response.data);
+      });
+    },
+    loadSubcategories: function loadSubcategories() {
+      var _this2 = this;
+
+      axios.get("api/subcategory").then(function (res) {
+        _this2.subcategories = res.data.data;
+      })["catch"](function (err) {
+        return console.log(err.response.data);
+      });
     }
   },
   mounted: function mounted() {
@@ -3244,7 +3266,9 @@ __webpack_require__.r(__webpack_exports__);
     this.$Progress.finish();
   },
   created: function created() {
-    //  [App.vue specific] When App.vue is first loaded start the progress bar
+    this.loadCategories();
+    this.loadSubcategories(); //  [App.vue specific] When App.vue is first loaded start the progress bar
+
     this.$Progress.start();
   }
 });
@@ -44581,17 +44605,21 @@ var render = function() {
                           },
                           [
                             _c("option", { attrs: { value: "" } }, [
-                              _vm._v("--Select--")
+                              _vm._v("--Select Category--")
                             ]),
                             _vm._v(" "),
-                            _c("option", { attrs: { value: "Blood" } }, [
-                              _vm._v("Blood")
-                            ]),
-                            _vm._v(" "),
-                            _c("option", { attrs: { value: "Urine" } }, [
-                              _vm._v("Urine")
-                            ])
-                          ]
+                            _vm._l(_vm.categories, function(category) {
+                              return _c(
+                                "option",
+                                {
+                                  key: category.id,
+                                  domProps: { value: category.id }
+                                },
+                                [_vm._v(_vm._s(category.category))]
+                              )
+                            })
+                          ],
+                          2
                         ),
                         _vm._v(" "),
                         _c("has-error", {

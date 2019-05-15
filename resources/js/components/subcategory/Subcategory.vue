@@ -115,9 +115,12 @@
                   class="form-control"
                   :class="{ 'is-invalid': form.errors.has('category') }"
                 >
-                  <option value>--Select--</option>
-                  <option value="Blood">Blood</option>
-                  <option value="Urine">Urine</option>
+                  <option value>--Select Category--</option>
+                  <option
+                    v-for="category in categories"
+                    :value="category.id"
+                    :key="category.id"
+                  >{{ category.category }}</option>
                 </select>
                 <has-error :form="form" field="category"></has-error>
               </div>
@@ -149,7 +152,8 @@ export default {
   name: "subcategory",
   data() {
     return {
-      options1: ["value1", "value2", "value3"],
+      categories: {},
+      subcategories: {},
       editMode: false,
       form: new Form({
         id: "",
@@ -166,6 +170,22 @@ export default {
     },
     createSubcategory() {
       //
+    },
+    loadCategories() {
+      axios
+        .get("api/category")
+        .then(res => {
+          this.categories = res.data.data;
+        })
+        .catch(err => console.log(err.response.data));
+    },
+    loadSubcategories() {
+      axios
+        .get("api/subcategory")
+        .then(res => {
+          this.subcategories = res.data.data;
+        })
+        .catch(err => console.log(err.response.data));
     }
   },
   mounted() {
@@ -173,6 +193,9 @@ export default {
     this.$Progress.finish();
   },
   created() {
+    this.loadCategories();
+
+    this.loadSubcategories();
     //  [App.vue specific] When App.vue is first loaded start the progress bar
     this.$Progress.start();
   }
