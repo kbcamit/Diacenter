@@ -10,11 +10,14 @@ require('./bootstrap');
 window.Vue = require('vue');
 
 import router from './router'
+import Swal from "sweetalert2";
 import { Form, HasError, AlertError } from 'vform'
 import VueProgressBar from 'vue-progressbar'
 import store from './store/store'
 
 window.Form = Form;
+
+window.Swal = Swal;
 
 Vue.use(VueProgressBar, {
     color: 'rgb(143, 255, 199)',
@@ -27,6 +30,17 @@ Vue.use(VueProgressBar, {
     },
     autoFinish: true
 })
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000
+});
+
+window.Toast = Toast;
+
+window.Fire = new Vue();
 
 /**
  * The following block of code may be used to automatically register your

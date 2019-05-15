@@ -26,7 +26,13 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'category' => 'required|unique:categories'
+        ]);
+
+        return Category::create([
+            'category' => $request['category']
+        ]);
     }
 
     /**
@@ -49,7 +55,12 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'category' => 'required|unique:categories,category,'. $id
+        ]);
+
+        return Category::updateOrCreate(['id' => $id],
+            ['category' => $request['category']]);
     }
 
     /**
@@ -60,6 +71,8 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $category = Category::findOrFail($id);
+        $category->delete();
+        return ['message'=> 'Category Deleted'];
     }
 }

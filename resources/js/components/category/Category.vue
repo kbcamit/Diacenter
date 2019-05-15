@@ -47,12 +47,13 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Blood</td>
+                    <tr v-for="(category, index) in categories" :key="category.id">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ category.category }}</td>
                       <td>
                         <a
                           href="#"
+                          @click="editCategory(category)"
                           class="btn btn-primary btn-xs"
                           data-toggle="tooltip"
                           data-plcaement="top"
@@ -62,6 +63,7 @@
                         </a>
                         <a
                           href="#"
+                          @click="deleteCategory(category.id)"
                           class="btn btn-danger btn-xs"
                           data-toggle="tooltip"
                           data-plcaement="top"
@@ -96,12 +98,15 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Category</h5>
+            <h5
+              class="modal-title"
+              id="exampleModalLabel"
+            >{{ editMode ? 'Update' : 'Create' }} Category</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="createCategory">
+          <form @submit.prevent="editMode ? updateCategory() : createCategory()">
             <div class="modal-body">
               <div class="form-group">
                 <input
@@ -145,27 +150,88 @@ export default {
       this.form.reset();
       $("#exampleModal").modal("show");
     },
+    editCategory(category) {
+      this.editMode = true;
+      this.form.clear();
+      this.form.fill(category);
+      $("#exampleModal").modal("show");
+    },
     createCategory() {
-      //
+      this.$Progress.start();
+      this.form
+        .post("api/category")
+        .then(() => {
+          Fire.$emit("AfterResult");
+          $("#exampleModal").modal("hide");
+          Toast.fire({
+            type: "success",
+            title: "Category created successfully"
+          });
+          this.$Progress.finish();
+        })
+        .catch(err => console.log(err.response.data));
+    },
+    updateCategory() {
+      this.$Progress.start();
+      this.form
+        .put("api/category/" + this.form.id)
+        .then(() => {
+          Fire.$emit("AfterResult");
+          $("#exampleModal").modal("hide");
+          Toast.fire({
+            type: "success",
+            title: "Category updated successfully"
+          });
+          this.$Progress.finish();
+        })
+        .catch(err => console.log(err.response.data));
+    },
+    deleteCategory(categoryId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.form
+            .delete("api/category/" + categoryId)
+            .then(() => {
+              Swal.fire("Deleted!", "Category has been deleted.", "success");
+              Fire.$emit("AfterResult");
+            })
+            .catch(() => {
+              Swal.fire("", "Something wrong", "warning");
+            });
+        }
+      });
     },
     loadCategory() {
       axios
         .get("api/category")
-        .then(({ data }) => (this.categories = data.data))
-        .catch(error => console.log(error));
+        .then(res => {
+          this.categories = res.data.data;
+        })
+        .catch(err => console.log(err.response.data));
     }
   },
   computed: {
     //console.log(this.$store.getters.categories);
   },
   mounted() {
-    //console.log(this.categories);
     //  [App.vue specific] When App.vue is finish loading finish the progress bar
     this.$Progress.finish();
   },
   created() {
-    //this.$store.dispatch("setCategory", this.loadCategory());
     this.loadCategory();
+
+    Fire.$on("AfterResult", () => {
+      this.loadCategory();
+    });
+
     //  [App.vue specific] When App.vue is first loaded start the progress bar
     this.$Progress.start();
   }
