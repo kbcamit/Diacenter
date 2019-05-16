@@ -9,10 +9,10 @@ class Subcategory extends Model
     protected $table = 'subcategories';
 
     protected $fillable = [
-        'category_id', 'subcategory'
+        'category', 'subcategory'
     ];
 
     public function category() {
-        return $this->belongsTo('App\Category');
+        return $this->belongsTo('App\Category', 'category', 'id');
     }
 }

@@ -51,13 +51,14 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Blood</td>
-                      <td>Blood Test</td>
+                    <tr v-for="(subcategory, index) in subcategories" :key="subcategory.id">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ subcategory.v_category }}</td>
+                      <td>{{ subcategory.subcategory }}</td>
                       <td>
                         <a
                           href="#"
+                          @click="editSubcategory(subcategory)"
                           class="btn btn-primary btn-xs"
                           data-toggle="tooltip"
                           data-plcaement="top"
@@ -101,12 +102,15 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Category</h5>
+            <h5
+              class="modal-title"
+              id="exampleModalLabel"
+            >{{ editMode ? 'Update' : 'Create' }} Subcategory</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="createSubcategory">
+          <form @submit.prevent="editMode ? updateSubcategory() : createSubcategory()">
             <div class="modal-body">
               <div class="form-group">
                 <select
@@ -168,8 +172,41 @@ export default {
       this.form.reset();
       $("#exampleModal").modal("show");
     },
+    editSubcategory(subcategory) {
+      this.editMode = true;
+      this.form.clear();
+      this.form.fill(subcategory);
+      $("#exampleModal").modal("show");
+    },
     createSubcategory() {
-      //
+      this.$Progress.start();
+      this.form
+        .post("api/subcategory")
+        .then(() => {
+          Fire.$emit("AfterResult");
+          $("#exampleModal").modal("hide");
+          Toast.fire({
+            type: "success",
+            title: "Subcategory created successfully"
+          });
+          this.$Progress.finish();
+        })
+        .catch(err => console.log(err.response.data));
+    },
+    updateSubcategory() {
+      this.$Progress.start();
+      this.form
+        .put("api/subcategory/" + this.form.id)
+        .then(() => {
+          Fire.$emit("AfterResult");
+          $("#exampleModal").modal("hide");
+          Toast.fire({
+            type: "success",
+            title: "Subcategory updated successfully"
+          });
+          this.$Progress.finish();
+        })
+        .catch(err => console.log(err.response.data));
     },
     loadCategories() {
       axios
@@ -196,6 +233,10 @@ export default {
     this.loadCategories();
 
     this.loadSubcategories();
+
+    Fire.$on("AfterResult", () => {
+      this.loadSubcategories();
+    });
     //  [App.vue specific] When App.vue is first loaded start the progress bar
     this.$Progress.start();
   }

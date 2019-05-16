@@ -3220,6 +3220,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "subcategory",
   data: function data() {
@@ -3240,22 +3244,60 @@ __webpack_require__.r(__webpack_exports__);
       this.form.reset();
       $("#exampleModal").modal("show");
     },
-    createSubcategory: function createSubcategory() {//
+    editSubcategory: function editSubcategory(subcategory) {
+      this.editMode = true;
+      this.form.clear();
+      this.form.fill(subcategory);
+      $("#exampleModal").modal("show");
     },
-    loadCategories: function loadCategories() {
+    createSubcategory: function createSubcategory() {
       var _this = this;
 
+      this.$Progress.start();
+      this.form.post("api/subcategory").then(function () {
+        Fire.$emit("AfterResult");
+        $("#exampleModal").modal("hide");
+        Toast.fire({
+          type: "success",
+          title: "Subcategory created successfully"
+        });
+
+        _this.$Progress.finish();
+      })["catch"](function (err) {
+        return console.log(err.response.data);
+      });
+    },
+    updateSubcategory: function updateSubcategory() {
+      var _this2 = this;
+
+      this.$Progress.start();
+      this.form.put("api/subcategory/" + this.form.id).then(function () {
+        Fire.$emit("AfterResult");
+        $("#exampleModal").modal("hide");
+        Toast.fire({
+          type: "success",
+          title: "Subcategory updated successfully"
+        });
+
+        _this2.$Progress.finish();
+      })["catch"](function (err) {
+        return console.log(err.response.data);
+      });
+    },
+    loadCategories: function loadCategories() {
+      var _this3 = this;
+
       axios.get("api/category").then(function (res) {
-        _this.categories = res.data.data;
+        _this3.categories = res.data.data;
       })["catch"](function (err) {
         return console.log(err.response.data);
       });
     },
     loadSubcategories: function loadSubcategories() {
-      var _this2 = this;
+      var _this4 = this;
 
       axios.get("api/subcategory").then(function (res) {
-        _this2.subcategories = res.data.data;
+        _this4.subcategories = res.data.data;
       })["catch"](function (err) {
         return console.log(err.response.data);
       });
@@ -3266,8 +3308,13 @@ __webpack_require__.r(__webpack_exports__);
     this.$Progress.finish();
   },
   created: function created() {
+    var _this5 = this;
+
     this.loadCategories();
-    this.loadSubcategories(); //  [App.vue specific] When App.vue is first loaded start the progress bar
+    this.loadSubcategories();
+    Fire.$on("AfterResult", function () {
+      _this5.loadSubcategories();
+    }); //  [App.vue specific] When App.vue is first loaded start the progress bar
 
     this.$Progress.start();
   }
@@ -44524,7 +44571,48 @@ var render = function() {
                 ])
               ]),
               _vm._v(" "),
-              _vm._m(1)
+              _c("div", { staticClass: "card-body table-responsive p-0" }, [
+                _c("table", { staticClass: "table table-hover" }, [
+                  _vm._m(1),
+                  _vm._v(" "),
+                  _c(
+                    "tbody",
+                    _vm._l(_vm.subcategories, function(subcategory, index) {
+                      return _c("tr", { key: subcategory.id }, [
+                        _c("td", [_vm._v(_vm._s(index + 1))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(subcategory.v_category))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(subcategory.subcategory))]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-primary btn-xs",
+                              attrs: {
+                                href: "#",
+                                "data-toggle": "tooltip",
+                                "data-plcaement": "top",
+                                "data-original-title": "Edit"
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.editSubcategory(subcategory)
+                                }
+                              }
+                            },
+                            [_c("i", { staticClass: "fa fa-edit" })]
+                          ),
+                          _vm._v(" "),
+                          _vm._m(2, true)
+                        ])
+                      ])
+                    }),
+                    0
+                  )
+                ])
+              ])
             ])
           ])
         ])
@@ -44549,7 +44637,23 @@ var render = function() {
           { staticClass: "modal-dialog", attrs: { role: "document" } },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(2),
+              _c("div", { staticClass: "modal-header" }, [
+                _c(
+                  "h5",
+                  {
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [
+                    _vm._v(
+                      _vm._s(_vm.editMode ? "Update" : "Create") +
+                        " Subcategory"
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._m(3)
+              ]),
               _vm._v(" "),
               _c(
                 "form",
@@ -44557,7 +44661,9 @@ var render = function() {
                   on: {
                     submit: function($event) {
                       $event.preventDefault()
-                      return _vm.createSubcategory($event)
+                      _vm.editMode
+                        ? _vm.updateSubcategory()
+                        : _vm.createSubcategory()
                     }
                   }
                 },
@@ -44674,7 +44780,7 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm._m(3)
+                  _vm._m(4)
                 ]
               )
             ])
@@ -44717,59 +44823,15 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body table-responsive p-0" }, [
-      _c("table", { staticClass: "table table-hover" }, [
-        _c("thead", [
-          _c("tr", [
-            _c("th", [_vm._v("SL No")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Category")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Subcategory")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Action")])
-          ])
-        ]),
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("SL No")]),
         _vm._v(" "),
-        _c("tbody", [
-          _c("tr", [
-            _c("td", [_vm._v("1")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Blood")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Blood Test")]),
-            _vm._v(" "),
-            _c("td", [
-              _c(
-                "a",
-                {
-                  staticClass: "btn btn-primary btn-xs",
-                  attrs: {
-                    href: "#",
-                    "data-toggle": "tooltip",
-                    "data-plcaement": "top",
-                    "data-original-title": "Edit"
-                  }
-                },
-                [_c("i", { staticClass: "fa fa-edit" })]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                {
-                  staticClass: "btn btn-danger btn-xs",
-                  attrs: {
-                    href: "#",
-                    "data-toggle": "tooltip",
-                    "data-plcaement": "top",
-                    "data-original-title": "Delete"
-                  }
-                },
-                [_c("i", { staticClass: "fa fa-trash" })]
-              )
-            ])
-          ])
-        ])
+        _c("th", [_vm._v("Category")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Subcategory")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Action")])
       ])
     ])
   },
@@ -44777,26 +44839,36 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "h5",
-        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
-        [_vm._v("Category")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-dismiss": "modal",
-            "aria-label": "Close"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
-    ])
+    return _c(
+      "a",
+      {
+        staticClass: "btn btn-danger btn-xs",
+        attrs: {
+          href: "#",
+          "data-toggle": "tooltip",
+          "data-plcaement": "top",
+          "data-original-title": "Delete"
+        }
+      },
+      [_c("i", { staticClass: "fa fa-trash" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
   },
   function() {
     var _vm = this
