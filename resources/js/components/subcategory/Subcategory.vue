@@ -68,6 +68,7 @@
                         </a>
                         <a
                           href="#"
+                          @click="deleteSubcategory(subcategory.id)"
                           class="btn btn-danger btn-xs"
                           data-toggle="tooltip"
                           data-plcaement="top"
@@ -207,6 +208,29 @@ export default {
           this.$Progress.finish();
         })
         .catch(err => console.log(err.response.data));
+    },
+    deleteSubcategory(subcategoryId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.form
+            .delete("api/subcategory/" + subcategoryId)
+            .then(() => {
+              Swal.fire("Deleted!", "Subcategory has been deleted.", "success");
+              Fire.$emit("AfterResult");
+            })
+            .catch(() => {
+              Swal.fire("", "Something wrong", "warning");
+            });
+        }
+      });
     },
     loadCategories() {
       axios

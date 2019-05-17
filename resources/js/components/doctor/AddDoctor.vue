@@ -37,7 +37,7 @@
                 </div>
               </div>
               <!-- /.card-header -->
-              <form role="form">
+              <form role="form" @submit.prevent="createDoctor">
                 <div class="card-body">
                   <div class="row">
                     <div class="col-6">
@@ -90,14 +90,14 @@
                         <has-error :form="form" field="email"></has-error>
                       </div>
                       <div class="form-group">
-                        <label for="doc_dob">Date of Birth</label>
+                        <label for="dob">Date of Birth</label>
                         <datepicker
-                          v-model="form.doc_dob"
+                          v-model="form.dob"
                           input-class="form-control"
                           format="yyyy-MM-dd"
-                          :class="{ 'is-invalid': form.errors.has('doc_dob') }"
+                          :class="{ 'is-invalid': form.errors.has('dob') }"
                         ></datepicker>
-                        <has-error :form="form" field="doc_dob"></has-error>
+                        <has-error :form="form" field="dob"></has-error>
                       </div>
                     </div>
                     <div class="col-6">
@@ -150,14 +150,14 @@
                         <has-error :form="form" field="mobile"></has-error>
                       </div>
                       <div class="form-group">
-                        <label for="doc_join_date">Join Date</label>
+                        <label for="join_date">Join Date</label>
                         <datepicker
-                          v-model="form.doc_join_date"
+                          v-model="form.join_date"
                           input-class="form-control"
                           format="yyyy-MM-dd"
-                          :class="{ 'is-invalid': form.errors.has('doc_join_date') }"
+                          :class="{ 'is-invalid': form.errors.has('join_date') }"
                         ></datepicker>
-                        <has-error :form="form" field="doc_join_date"></has-error>
+                        <has-error :form="form" field="join_date"></has-error>
                       </div>
                     </div>
                   </div>
@@ -182,6 +182,7 @@
 
 <script>
 import Datepicker from "vuejs-datepicker";
+import { setInterval } from "timers";
 export default {
   name: "add-doctor",
   data() {
@@ -192,17 +193,34 @@ export default {
         email: "",
         father_name: "",
         mother_name: "",
-        doc_dob: "",
+        dob: "",
+        image: "",
         mobile: "",
         contact_address: "",
         designation: "",
-        doc_join_date: "",
+        join_date: "",
         status: ""
       })
     };
   },
   components: {
     Datepicker
+  },
+  methods: {
+    createDoctor() {
+      this.$Progress.start();
+      this.form
+        .post("api/doctor")
+        .then(() => {
+          Toast.fire({
+            type: "success",
+            title: "Doctor created successfully"
+          });
+          this.$Progress.finish();
+          this.$router.push("/view-doctor");
+        })
+        .catch(err => console.log(err.response.data));
+    }
   },
   mounted() {
     //  [App.vue specific] When App.vue is finish loading finish the progress bar

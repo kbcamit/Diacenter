@@ -17,8 +17,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Category Controller
+//Category api resource
 Route::apiResource('/category', 'API\CategoryController');
 
-//Subcategory controller
+//Subcategory api resource
 Route::apiResource('/subcategory', 'API\SubcategoryController');
+
+//Doctor api resource
+Route::apiResource('/doctor', 'API\DoctorController');
