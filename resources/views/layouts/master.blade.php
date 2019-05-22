@@ -14,6 +14,13 @@
     <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="/css/app.css">
+
+    <style>
+    .custom-paginate {
+        float: right;
+        margin-right: 30px;
+    }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper" id="app">

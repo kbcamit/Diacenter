@@ -47,12 +47,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(category, index) in categories" :key="category.id">
+                    <tr v-for="(category, index) in categories.data" :key="category.id">
                       <td>{{ index + 1 }}</td>
                       <td>{{ category.category }}</td>
                       <td>
-                        <a
-                          href="#"
+                        <button
+                          type="button"
                           @click="editCategory(category)"
                           class="btn btn-primary btn-xs"
                           data-toggle="tooltip"
@@ -60,9 +60,9 @@
                           data-original-title="Edit"
                         >
                           <i class="fa fa-edit"></i>
-                        </a>
-                        <a
-                          href="#"
+                        </button>
+                        <button
+                          type="button"
                           @click="deleteCategory(category.id)"
                           class="btn btn-danger btn-xs"
                           data-toggle="tooltip"
@@ -70,11 +70,14 @@
                           data-original-title="Delete"
                         >
                           <i class="fa fa-trash"></i>
-                        </a>
+                        </button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+                <div class="custom-paginate">
+                  <pagination :data="categories" @pagination-change-page="getResults"></pagination>
+                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -213,9 +216,15 @@ export default {
       axios
         .get("api/category")
         .then(res => {
-          this.categories = res.data.data;
+          this.categories = res.data;
         })
         .catch(err => console.log(err.response.data));
+    },
+    // Our method to GET results from a Laravel endpoint
+    getResults(page = 1) {
+      axios.get("api/category?page=" + page).then(res => {
+        this.categories = res.data;
+      });
     }
   },
   computed: {

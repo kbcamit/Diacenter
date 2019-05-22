@@ -52,7 +52,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(doctor, index) in doctors" :key="doctor.id">
+                    <tr v-for="(doctor, index) in doctors.data" :key="doctor.id">
                       <td>{{ index + 1 }}</td>
                       <td>
                         <img src alt="Demo Image" class="img img-circle">
@@ -63,8 +63,8 @@
                       <td>{{ doctor.mobile }}</td>
                       <td>{{ doctor.contact_address }}</td>
                       <td>
-                        <a
-                          href="#"
+                        <button
+                          type="button"
                           class="btn btn-primary btn-xs"
                           data-toggle="tooltip"
                           data-plcaement="top"
@@ -72,8 +72,9 @@
                           data-original-title="View"
                         >
                           <i class="fa fa-eye"></i>
-                        </a>
-                        <a
+                        </button>
+                        <router-link
+                          :to="`/edit-doctor/${doctor.id}`"
                           href="#"
                           class="btn btn-primary btn-xs"
                           data-toggle="tooltip"
@@ -81,7 +82,7 @@
                           data-original-title="Edit"
                         >
                           <i class="fa fa-edit"></i>
-                        </a>
+                        </router-link>
                         <a
                           href="#"
                           class="btn btn-danger btn-xs"
@@ -96,6 +97,9 @@
                     </tr>
                   </tbody>
                 </table>
+                <div class="custom-paginate">
+                  <pagination :data="doctors" @pagination-change-page="getResults"></pagination>
+                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -127,9 +131,14 @@ export default {
     getAllDoctors() {
       axios("api/doctor")
         .then(res => {
-          this.doctors = res.data.data;
+          this.doctors = res.data;
         })
         .catch(err => console.log(err.response.data));
+    },
+    getResults(page = 1) {
+      axios.get("api/doctor?page=" + page).then(res => {
+        this.doctors = res.data;
+      });
     },
     deleteDoctor(doctorId) {
       Swal.fire({

@@ -51,10 +51,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Utilities</td>
-                      <td>Utilities Expense</td>
+                    <tr v-for="(expense, index) in expenses.data" :key="expense.id">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ expense.category }}</td>
+                      <td>{{ expense.description }}</td>
                       <td>
                         <a
                           href="#"
@@ -95,14 +95,25 @@
 export default {
   data() {
     return {
-      //
+      expenses: {}
     };
+  },
+  methods: {
+    loadExpenseCategories() {
+      axios
+        .get("api/expense-category")
+        .then(res => {
+          this.expenses = res.data;
+        })
+        .catch(err => console.log(err.response.data));
+    }
   },
   mounted() {
     //  [App.vue specific] When App.vue is finish loading finish the progress bar
     this.$Progress.finish();
   },
   created() {
+    this.loadExpenseCategories();
     //  [App.vue specific] When App.vue is first loaded start the progress bar
     this.$Progress.start();
   }

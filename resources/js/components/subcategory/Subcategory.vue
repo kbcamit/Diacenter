@@ -47,17 +47,21 @@
                       <th>SL No</th>
                       <th>Category</th>
                       <th>Subcategory</th>
+                      <th>Lab ID</th>
+                      <th>Price</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(subcategory, index) in subcategories" :key="subcategory.id">
+                    <tr v-for="(subcategory, index) in subcategories.data" :key="subcategory.id">
                       <td>{{ index + 1 }}</td>
                       <td>{{ subcategory.v_category }}</td>
                       <td>{{ subcategory.subcategory }}</td>
+                      <td>{{ subcategory.lab_id }}</td>
+                      <td>{{ subcategory.price }}</td>
                       <td>
-                        <a
-                          href="#"
+                        <button
+                          type="button"
                           @click="editSubcategory(subcategory)"
                           class="btn btn-primary btn-xs"
                           data-toggle="tooltip"
@@ -65,9 +69,9 @@
                           data-original-title="Edit"
                         >
                           <i class="fa fa-edit"></i>
-                        </a>
-                        <a
-                          href="#"
+                        </button>
+                        <button
+                          type="button"
                           @click="deleteSubcategory(subcategory.id)"
                           class="btn btn-danger btn-xs"
                           data-toggle="tooltip"
@@ -75,11 +79,14 @@
                           data-original-title="Delete"
                         >
                           <i class="fa fa-trash"></i>
-                        </a>
+                        </button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+                <div class="custom-paginate">
+                  <pagination :data="subcategories" @pagination-change-page="getResults"></pagination>
+                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -140,6 +147,29 @@
                 >
                 <has-error :form="form" field="subcategory"></has-error>
               </div>
+              <div class="form-group">
+                <input
+                  v-model="form.lab_id"
+                  type="text"
+                  name="lab_id"
+                  placeholder="Enter Lab ID"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('lab_id') }"
+                >
+                <has-error :form="form" field="lab_id"></has-error>
+              </div>
+              <div class="form-group">
+                <input
+                  v-model="form.price"
+                  type="number"
+                  step="any"
+                  name="price"
+                  placeholder="Enter Price"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('price') }"
+                >
+                <has-error :form="form" field="price"></has-error>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -163,7 +193,9 @@ export default {
       form: new Form({
         id: "",
         category: "",
-        subcategory: ""
+        subcategory: "",
+        lab_id: "",
+        price: ""
       })
     };
   },
@@ -244,9 +276,14 @@ export default {
       axios
         .get("api/subcategory")
         .then(res => {
-          this.subcategories = res.data.data;
+          this.subcategories = res.data;
         })
         .catch(err => console.log(err.response.data));
+    },
+    getResults(page = 1) {
+      axios.get("api/subcategory?page=" + page).then(res => {
+        this.subcategories = res.data;
+      });
     }
   },
   mounted() {

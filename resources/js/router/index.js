@@ -4,6 +4,7 @@ import Dashboard from '../components/dashboard/Dashboard'
 import Category from '../components/category/Category'
 import Subcategory from '../components/subcategory/Subcategory'
 import AddDoctor from '../components/doctor/AddDoctor'
+import EditDoctor from '../components/doctor/EditDoctor'
 import ViewDoctor from '../components/doctor/ViewDoctor'
 import AddExpenseCategory from '../components/expense/AddExpense'
 import ViewExpenseCategory from '../components/expense/ViewExpense'
@@ -15,51 +16,56 @@ Vue.use(Router)
 export default new Router({
     routes: [
         {
-            path: '/dashboard',
-            name: 'Dashboard',
+            path: "/dashboard",
+            name: "Dashboard",
             component: Dashboard
         },
         {
-            path: '/category',
-            name: 'Category',
+            path: "/category",
+            name: "Category",
             component: Category
         },
         {
-            path: '/subcategory',
-            name: 'Subcategory',
+            path: "/subcategory",
+            name: "Subcategory",
             component: Subcategory
         },
         {
-            path: '/add-doctor',
-            name: 'AddDoctor',
+            path: "/add-doctor",
+            name: "AddDoctor",
             component: AddDoctor
         },
         {
-            path: '/view-doctor',
-            name: 'ViewDoctor',
+            path: "/edit-doctor/:id",
+            name: "EditDoctor",
+            component: EditDoctor
+        },
+        {
+            path: "/view-doctor",
+            name: "ViewDoctor",
             component: ViewDoctor
         },
         {
-            path: '/add-expense-category',
-            name: 'AddExpenseCategory',
+            path: "/add-expense-category",
+            name: "AddExpenseCategory",
             component: AddExpenseCategory
         },
         {
-            path: '/view-expense-category',
-            name: 'ViewExpenseCategory',
+            path: "/view-expense-category",
+            name: "ViewExpenseCategory",
             component: ViewExpenseCategory
         },
         {
-            path: '/add-expense-invoice',
-            name: 'ExpenseInvoice',
+            path: "/add-expense-invoice",
+            name: "ExpenseInvoice",
             component: ExpenseInvoice
         },
         {
-            path: '/general-settings',
-            name: 'GeneralSettings',
+            path: "/general-settings",
+            name: "GeneralSettings",
             component: GeneralSettings
         }
     ],
-    mode: 'history',
-    linkActiveClass: 'active'
-})
+    mode: "history",
+    linkActiveClass: "active"
+});

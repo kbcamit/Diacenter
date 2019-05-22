@@ -33,12 +33,16 @@ class SubcategoryController extends Controller
     {
         $this->validate($request, [
             'category' => 'required',
-            'subcategory' => 'required|unique:subcategories'
+            'subcategory' => 'required|unique:subcategories',
+            'lab_id' => 'required',
+            'price' => 'required'
         ]);
 
         return Subcategory::create([
             'category' => $request['category'],
-            'subcategory' => $request['subcategory']
+            'subcategory' => $request['subcategory'],
+            'lab_id' => $request['lab_id'],
+            'price' => $request['price']
         ]);
     }
 
@@ -64,12 +68,16 @@ class SubcategoryController extends Controller
     {
         $this->validate($request, [
             'category' => 'required',
-            'subcategory' => 'required|unique:subcategories,subcategory,'. $id
+            'subcategory' => 'required|unique:subcategories,subcategory,'. $id,
+            'lab_id' => 'required',
+            'price' => 'required'
         ]);
 
         return Subcategory::updateOrCreate(['id' => $id], [
             'category' => $request['category'],
-            'subcategory' => $request['subcategory']
+            'subcategory' => $request['subcategory'],
+            'lab_id' => $request['lab_id'],
+            'price' => $request['price']
         ]);
     }
 

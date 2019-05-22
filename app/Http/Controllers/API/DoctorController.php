@@ -61,7 +61,8 @@ class DoctorController extends Controller
      */
     public function show($id)
     {
-        //
+        $doctor = Doctor::findOrFail($id);
+        return $doctor;
     }
 
     /**
@@ -73,7 +74,32 @@ class DoctorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|unique:doctors,email,' . $id,
+            'father_name' => 'required',
+            'mother_name' => 'required',
+            'dob' => 'required',
+            'join_date' => 'required',
+            'designation' => 'required',
+            'mobile' => 'required',
+            'contact_address' => 'required'
+        ]);
+
+        return Doctor::updateOrCreate(['id' => $id],
+        [
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'father_name' => $request['father_name'],
+            'mother_name' => $request['mother_name'],
+            'dob' => date('Y-m-d', strtotime($request['dob'])),
+            'join_date' => date('Y-m-d', strtotime($request['join_date'])),
+            'designation' => $request['designation'],
+            'mobile' => $request['mobile'],
+            'contact_address' => $request['contact_address'],
+            'image' => '',
+            'status' => 1
+        ]);
     }
 
     /**

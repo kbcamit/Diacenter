@@ -25,3 +25,6 @@ Route::apiResource('/subcategory', 'API\SubcategoryController');
 
 //Doctor api resource
 Route::apiResource('/doctor', 'API\DoctorController');
+
+//Expense Category resource
+Route::apiResource('/expense-category', 'API\ExpenseCategoryController');

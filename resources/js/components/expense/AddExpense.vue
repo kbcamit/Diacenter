@@ -40,7 +40,7 @@
                 </div>
               </div>
               <!-- /.card-header -->
-              <form role="form">
+              <form role="form" @submit.prevent="createExpenseCategory">
                 <div class="card-body">
                   <div class="row">
                     <div class="col-6">
@@ -57,16 +57,16 @@
                         <has-error :form="form" field="category"></has-error>
                       </div>
                       <div class="form-group">
-                        <label for="expense_description">Expense Description</label>
+                        <label for="description">Expense Description</label>
                         <textarea
-                          v-model="form.expense_description"
+                          v-model="form.description"
                           class="form-control"
-                          id="expense_description"
+                          id="description"
                           placeholder="Enter Expense Description"
                           rows="2"
-                          :class="{ 'is-invalid': form.errors.has('expense_description') }"
+                          :class="{ 'is-invalid': form.errors.has('description') }"
                         ></textarea>
-                        <has-error :form="form" field="expense_description"></has-error>
+                        <has-error :form="form" field="description"></has-error>
                       </div>
                     </div>
                   </div>
@@ -96,9 +96,25 @@ export default {
       form: new Form({
         id: "",
         category: "",
-        expense_description: ""
+        description: ""
       })
     };
+  },
+  methods: {
+    createExpenseCategory() {
+      this.$Progress.start();
+      this.form
+        .post("api/expense-category")
+        .then(() => {
+          Toast.fire({
+            type: "success",
+            title: "Expense Category created successfully"
+          });
+          this.$Progress.finish();
+          this.$router.push("/view-expense-category");
+        })
+        .catch(err => console.log(err.response.data));
+    }
   },
   mounted() {
     //  [App.vue specific] When App.vue is finish loading finish the progress bar
